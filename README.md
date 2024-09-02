@@ -6,7 +6,7 @@ Quick & easy template generator for frequently sent messages
 
 # Demo
 
-[Visit]()
+[Visit](https://parthvyas7.github.io/template-generator/)
 
 ## Run Locally
 
