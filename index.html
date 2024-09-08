@@ -32,10 +32,15 @@
       .hidden {
         display: none;
       }
+      .psMsg {
+        font-size: small;
+        display: block;
+      }
     </style>
   </head>
   <body>
     <h1>Template generator</h1>
+    <p>Select or create a template</p>
     <div id="templateSelection">
       <select id="templateSelect" title="Select Template"></select>
       <button id="editBtn" title="Edit Template">Edit Template</button>
@@ -53,6 +58,10 @@
     <button id="copyBtn" title="Copy">Copy</button>
     <span id="copyMsg" class="hidden">Copied!</span>
     <pre id="output" class="hidden"></pre>
+    <span class="psMsg"
+      >Note: If you don't enter any value for a given field, it will be
+      whitespace in generated template</span
+    >
     <script>
       let templates = {};
 
@@ -65,7 +74,7 @@
             "Connection Request Message To Employee":
               "Hey,\nI hope this message finds you well,\nI was impressed with your experience and your work at {Company}. I am currently exploring full-time opportunities at {Company} as a Software Engineer and would love to connect with you to learn more about your experience working there.",
             "Connection Request Message to Recruiter":
-              "Hey,\nI’ve just seen that you work with {Company}. As a {Job Position} professional, I’ve been working for about a year. I would love to connect with you and discuss more about any suitable opportunities for someone with my background.\nThanks in advance.",
+              "Hey,\nI’ve just seen that you work with {Company}. I would love to connect with you and discuss more about any suitable opportunities for someone with my background.\nThanks in advance.",
             "Follow-up feedback post-referral":
               "Thank you so much for agreeing to provide a referral for me. In the event that the referral does not lead to a successful outcome, would it be possible for you to let me know if you receive any feedback from the employer? I would really appreciate any insights or suggestions you can offer about how I can improve my qualifications or presentation in the future.",
             "No response on referral request":
@@ -73,9 +82,9 @@
             "Reply to Rejections":
               "Dear Recruiting Team,\n\nThank you for considering my application for the position of {Position}. While I am disappointed to hear that my qualifications did not meet your current needs, I appreciate your prompt response and the opportunity to apply.\n\nI am eager to improve my skills and qualifications in order to become a more competitive candidate in the future. I would be grateful if you could provide me with feedback or suggestions on where my profile or skills may not have met your expectations for this role. This feedback will be helpful for me to identify areas of improvement and refine my job search strategy.\nThank you for your time and consideration, and I look forward to the possibility of future opportunities with {Company}.",
             "When you are going for a specific job position":
-              "{JobPosition} referral/application\n\nHey,\nI hope this message finds you well. I am requesting a referral/application for a {JobPosition} at {Company}. My experience and skills align well with the requirements of the position, and I am excited about the prospect of joining your team.\n\nAs a Software Engineer at Apra Labs for a brief period, I gained exposure to the latest industry trends and cutting-edge technologies, which I believe would be valuable assets to the {Company} team. and have also previously held the role of Software Development Engineer at Crest Data Systems in Ahmedabad. Additionally, I have completed several web development projects and have a strong track record as a Competitive Programmer, having solved over 400 Data Structure and algorithm problems and participated in numerous live contests.\n\nI am eager to continue developing my skills and believe that {Company} would provide an excellent environment for me to do so. I have attached my resume for your review. I would greatly appreciate it if you could refer me for the {JobPosition} and provide any additional guidance on the application process.\nThank you very much for considering my request.\n\nJob ID: {JobID}\nJob/Reference Link: {JobLink}\nResume: https://tiny.cc/itspv7",
+              "{JobPosition} Referral/Application\n\nHi,\n\nI hope you're doing well. I'm writing to express interest in opportunities at {Company} and to request a referral for a {JobPosition} role.\n\nAs an experienced Software Engineer specializing in full-stack development with React.js and Node.js, I’m passionate about building innovative solutions and contributing to meaningful projects.\n\nAny assistance would be greatly appreciated.\n\nJob ID: {JobID}\nJob/Reference Link: {JobLink}\n\nPortfolio: https://parthvyas7.github.io\nGitHub: https://github.com/parthvyas7\nLeetCode: https://leetcode.com/parthvyas7\nResume: https://docs.google.com/document/d/1slcsrmNtTVKViEQiXK9XP837D2uTf-tgu2Nz9g8oLPs\n\nThank you!",
             "When you don’t have details for a job position":
-              "Referral Request / Application for Software Engineer Position at {Company}\n\nHey,\nI hope this message finds you well. I am reaching out to inquire about any full-time Software Engineer/Developer positions available at {Company}, and if possible, request for a referral to such a position.\n\nI was employed as a Software Engineer at Apra Labs and have over a year of experience as a Software Development Engineer at Crest Data Systems in Ahmedabad. Along with that, I have completed multiple web development projects, and I have honed my problem-solving skills by participating in over 10 competitive programming contests and solving over 400 DSA problems.\n\nI am excited about the possibility of joining {Company} as a Software Engineer/Developer to learn and grow in a dynamic work environment. If you have any openings or can refer me to any such position, it would be greatly appreciated.\n\nPlease find my resume attached for your review.\nThank you for your time and consideration.\n\nResume: https://tiny.cc/itspv7",
+              "Referral Request for {JobPosition} Position\n\nHi,\nI hope you're doing well. I'm writing to express interest in opportunities at {Company} and to request a referral for a Software Engineer role.\n\nAs an experienced Software Engineer specializing in full-stack development with React.js and Node.js, I’m passionate about building innovative solutions and contributing to meaningful projects.\n\nAny assistance would be greatly appreciated.\n\nPortfolio: https://parthvyas7.github.io\nGitHub: https://github.com/parthvyas7\nLeetCode: https://leetcode.com/parthvyas7\nResume: https://docs.google.com/document/d/1slcsrmNtTVKViEQiXK9XP837D2uTf-tgu2Nz9g8oLPs\n\nThank you!",
           };
           saveTemplates();
         }
@@ -108,13 +117,11 @@
         matchesDeduped = [...new Set(matches)];
         matchesDeduped.forEach((match) => {
           const placeholder = match.slice(1, -1);
-          const label = document.createElement("label");
-          label.textContent = `${placeholder}: `;
           const input = document.createElement("input");
           input.type = "text";
           input.id = placeholder;
-          label.appendChild(input);
-          placeholdersDiv.appendChild(label);
+          input.placeholder = placeholder;
+          placeholdersDiv.appendChild(input);
           placeholdersDiv.appendChild(document.createElement("br"));
         });
       }
@@ -122,7 +129,7 @@
       function replacePlaceholders(template, placeholders) {
         return template.replace(
           /{(.*?)}/g,
-          (match, placeholder) => placeholders[placeholder] || match
+          (match, placeholder) => placeholders[placeholder] || ""
         );
       }
 
