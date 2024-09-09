@@ -7,9 +7,8 @@
     <style>
       body {
         font-family: Helvetica, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 20px;
+        line-height: 1.3;
+        padding: 10px 20px;
         max-width: 800px;
         margin: 0 auto;
         font-size: x-large;
@@ -18,8 +17,13 @@
       input,
       button,
       textarea {
-        margin: 10px 0;
+        margin: 5px 0;
         padding: 5px;
+        font-size: medium;
+      }
+      input {
+        background-color: #eee;
+        border: 1px solid #ddd;
       }
       #output,
       #templateContent {
@@ -28,6 +32,8 @@
         border: 1px solid #ddd;
         width: 100%;
         box-sizing: border-box;
+        background-color: #eee;
+        font-size: x-large;
       }
       .hidden {
         display: none;
@@ -42,25 +48,31 @@
     <h1>Template generator</h1>
     <p>Select or create a template</p>
     <div id="templateSelection">
-      <select id="templateSelect" title="Select Template"></select>
-      <button id="editBtn" title="Edit Template">Edit Template</button>
-      <button id="newBtn" title="New Template">New Template</button>
-      <button id="deleteBtn" title="Delete Template">Delete Template</button>
+      <select id="templateSelect"></select>
+      <button id="editBtn">Edit Template</button>
+      <button id="newBtn">New Template</button>
+      <button id="deleteBtn">Delete Template</button>
     </div>
     <div id="templateEditor" class="hidden">
       <input id="templateName" type="text" placeholder="Template Name" />
-      <textarea id="templateContent" rows="20" cols="30"></textarea>
-      <button id="saveBtn" title="Save">Save</button>
-      <button id="cancelBtn" title="Cancel">Cancel</button>
+      <textarea
+        id="templateContent"
+        rows="10"
+        placeholder="Template Contents"
+      ></textarea>
+      <button id="saveBtn">Save</button>
+      <button id="cancelBtn">Cancel</button>
     </div>
     <div id="placeholders"></div>
     <button id="generateBtn" title="Generate">Generate</button>
-    <button id="copyBtn" title="Copy">Copy</button>
+    <button id="copyBtn">Copy</button>
+    <button id="clearBtn">Clear</button>
     <span id="copyMsg" class="hidden">Copied!</span>
     <pre id="output" class="hidden"></pre>
     <span class="psMsg"
-      >Note: If you don't enter any value for a given field, it will be
-      whitespace in generated template</span
+      >Note: If you don't enter any value for a given field, it will be empty in
+      generated template. Templates are stored in local storage of your
+      browser.</span
     >
     <script>
       let templates = {};
@@ -81,10 +93,12 @@
               "Thank you for agreeing to be a reference for me. I really appreciate it. Would it be possible for you to also provide feedback or suggestions on my skills and qualifications? I want to make sure I'm presenting myself in the best possible light, and any insights you can offer would be greatly appreciated",
             "Reply to Rejections":
               "Dear Recruiting Team,\n\nThank you for considering my application for the position of {Position}. While I am disappointed to hear that my qualifications did not meet your current needs, I appreciate your prompt response and the opportunity to apply.\n\nI am eager to improve my skills and qualifications in order to become a more competitive candidate in the future. I would be grateful if you could provide me with feedback or suggestions on where my profile or skills may not have met your expectations for this role. This feedback will be helpful for me to identify areas of improvement and refine my job search strategy.\nThank you for your time and consideration, and I look forward to the possibility of future opportunities with {Company}.",
-            "When you are going for a specific job position":
+            "Detailed job position":
               "{JobPosition} Referral/Application\n\nHi,\n\nI hope you're doing well. I'm writing to express interest in opportunities at {Company} and to request a referral for a {JobPosition} role.\n\nAs an experienced Software Engineer specializing in full-stack development with React.js and Node.js, I’m passionate about building innovative solutions and contributing to meaningful projects.\n\nAny assistance would be greatly appreciated.\n\nJob ID: {JobID}\nJob/Reference Link: {JobLink}\n\nPortfolio: https://parthvyas7.github.io\nGitHub: https://github.com/parthvyas7\nLeetCode: https://leetcode.com/parthvyas7\nResume: https://docs.google.com/document/d/1slcsrmNtTVKViEQiXK9XP837D2uTf-tgu2Nz9g8oLPs\n\nThank you!",
-            "When you don’t have details for a job position":
-              "Referral Request for {JobPosition} Position\n\nHi,\nI hope you're doing well. I'm writing to express interest in opportunities at {Company} and to request a referral for a Software Engineer role.\n\nAs an experienced Software Engineer specializing in full-stack development with React.js and Node.js, I’m passionate about building innovative solutions and contributing to meaningful projects.\n\nAny assistance would be greatly appreciated.\n\nPortfolio: https://parthvyas7.github.io\nGitHub: https://github.com/parthvyas7\nLeetCode: https://leetcode.com/parthvyas7\nResume: https://docs.google.com/document/d/1slcsrmNtTVKViEQiXK9XP837D2uTf-tgu2Nz9g8oLPs\n\nThank you!",
+            "For a job position with no details":
+              "Referral Request for Software engineer Position\n\nHi,\nI hope you're doing well. I'm writing to express interest in opportunities at {Company} and to request a referral for a Software Engineer role.\n\nAs an experienced Software Engineer specializing in full-stack development with React.js and Node.js, I’m passionate about building innovative solutions and contributing to meaningful projects.\n\nAny assistance would be greatly appreciated.\n\nPortfolio: https://parthvyas7.github.io\nGitHub: https://github.com/parthvyas7\nLeetCode: https://leetcode.com/parthvyas7\nResume: https://docs.google.com/document/d/1slcsrmNtTVKViEQiXK9XP837D2uTf-tgu2Nz9g8oLPs\n\nThank you!",
+            "Why this company?":
+              "I am excited about the opportunity to join {Company} because of its strong reputation for innovation and commitment to excellence. I am particularly drawn to {a specific aspect of company which interests you}, and I believe my skills and experience align well with the company’s goals. Furthermore, I am eager to contribute to sundays's success and grow alongside the team in a dynamic and challenging environment.",
           };
           saveTemplates();
         }
@@ -158,6 +172,12 @@
           })
           .catch((err) => console.error("Failed to copy: ", err));
       }
+      const clearContents = () => {
+        document.getElementById("output").classList.add("hidden");
+        document.querySelectorAll("#placeholders input").forEach((input) => {
+          input.value = "";
+        });
+      };
 
       function showEditor(isNew = false) {
         document.getElementById("templateSelection").classList.add("hidden");
@@ -165,6 +185,7 @@
         document.getElementById("placeholders").classList.add("hidden");
         document.getElementById("generateBtn").classList.add("hidden");
         document.getElementById("copyBtn").classList.add("hidden");
+        document.getElementById("clearBtn").classList.add("hidden");
         document.getElementById("output").classList.add("hidden");
 
         if (!isNew) {
@@ -184,6 +205,7 @@
         document.getElementById("placeholders").classList.remove("hidden");
         document.getElementById("generateBtn").classList.remove("hidden");
         document.getElementById("copyBtn").classList.remove("hidden");
+        document.getElementById("clearBtn").classList.remove("hidden");
         document.getElementById("output").classList.remove("hidden");
       }
 
@@ -195,6 +217,7 @@
           saveTemplates();
           populateTemplateSelect();
           hideEditor();
+          clearContents();
         } else {
           alert("Please provide both a name and content for the template.");
         }
@@ -221,6 +244,9 @@
         document
           .getElementById("copyBtn")
           .addEventListener("click", copyToClipboard);
+        document
+          .getElementById("clearBtn")
+          .addEventListener("click", clearContents);
         document
           .getElementById("editBtn")
           .addEventListener("click", () => showEditor(false));
